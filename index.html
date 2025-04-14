@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Event Sparkels - Login</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(-45deg, #0f0c29, #302b63, #24243e, #1cb5e0);
+      background-size: 400% 400%;
+      animation: gradientBG 10s ease infinite;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      color: #fff;
+    }
+
+    @keyframes gradientBG {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .login-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      padding: 50px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+      width: 400px;
+      text-align: center;
+      animation: slideIn 0.6s ease-out;
+    }
+
+    @keyframes slideIn {
+      0% { transform: translateY(50px); opacity: 0; }
+      100% { transform: translateY(0); opacity: 1; }
+    }
+
+    .login-card h2 {
+      color: #fff;
+      margin-bottom: 20px;
+      font-size: 26px;
+    }
+
+    input {
+      width: 95%;
+      padding: 14px;
+      margin: 12px 0;
+      border-radius: 10px;
+      border: none;
+      font-size: 18px;
+    }
+
+    button {
+      width: 98%;
+      padding: 14px;
+      margin-top: 20px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.05);
+    }
+
+    .emoji {
+      font-size: 48px;
+      margin-bottom: 15px;
+    }
+
+    .bg-img {
+      position: absolute;
+      bottom: 100px;
+      left: 20px;
+      width: 360px;
+    }
+
+    @media (max-width: 500px) {
+      .login-card {
+        width: 90%;
+        padding: 30px 20px;
+      }
+
+      .bg-img {
+        width: 250px;
+        bottom: 50px;
+        left: 10px;
+      }
+    }
+
+    label {
+      display: none;
+    }
+
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <div class="emoji">🎉📲</div>
+    <h2>Login to Event Sparkels</h2>
+    
+    <label for="phone">Phone Number</label>
+    <input type="text" id="phone" placeholder="📱 Phone Number" required />
+    
+    <label for="password">Password</label>
+    <input type="password" id="password" placeholder="🔒 Password" required />
+    
+    <button onclick="login()">Login</button>
+  </div>
+
+  <!-- Background image (you can replace the src with your own image path) -->
+  <img class="bg-img" src="event-sparkels-sticker.png" alt="Event Sparkels" />
+
+  <script>
+    function login() {
+      const phone = document.getElementById("phone").value;
+      const password = document.getElementById("password").value;
+
+      if (phone.length === 10 && password.trim() !== "") {
+        localStorage.setItem("loggedIn", "true");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Please enter a valid 10-digit phone and password.");
+      }
+    }
+  </script>
+</body>
+</html>

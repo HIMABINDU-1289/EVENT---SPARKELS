@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Event Registration - Event Sparkels</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1cb5e0, #000046);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      padding: 20px;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .club-nav {
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 20px;
+      flex-wrap: wrap;
+    }
+
+    .club-nav button {
+      background: rgba(255,255,255,0.1);
+      border: 2px solid #00c6ff;
+      color: #fff;
+      padding: 10px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: 0.3s ease;
+    }
+
+    .club-nav button:hover {
+      background-color: #00c6ff;
+    }
+
+    .search-bar {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 2px solid #00c6ff;
+      margin-bottom: 20px;
+      background: rgba(255, 255, 255, 0.1);
+      color: #fff;
+      text-align: center;
+    }
+
+    .event-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .event-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(6px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      border-left: 5px solid #00eaff;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    .event-card:hover {
+      transform: scale(1.05);
+    }
+
+    .event-card img {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 10px;
+    }
+
+    .event-card h3 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #00f7ff;
+    }
+
+    .event-card p {
+      margin: 5px 0;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: #00bcd4;
+    }
+
+    .timer {
+      font-size: 18px;
+      color: #ffeb3b;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.8);
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal-content {
+      background-color: #121212;
+      padding: 20px;
+      border-radius: 12px;
+      max-width: 400px;
+      width: 100%;
+    }
+
+    .modal-content h2 {
+      color: #00eaff;
+      margin-top: 0;
+    }
+
+    .modal-content input, .modal-content button {
+      width: 100%;
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border: none;
+    }
+
+    .modal-content button {
+      background: #00c6ff;
+      color: #000;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .modal-content button:hover {
+      background: #00eaff;
+    }
+  </style>
+</head>
+<body>
+  <a href="dashboard.html" class="back-button">⬅ Back</a>
+  <h1>📋 Event Registrations</h1>
+
+  <input type="text" class="search-bar" placeholder="Search Events..." id="searchInput" onkeyup="searchEvents()">
+
+  <div class="club-nav">
+    <button onclick="filterEvents('All')">🌟 All</button>
+    <button onclick="filterEvents('Sports')">🏏 Sports</button>
+    <button onclick="filterEvents('Tech')">💻 Tech</button>
+    <button onclick="filterEvents('Cultural')">🎭 Cultural</button>
+    <button onclick="filterEvents('Non-Technical')">🎲 Non-Tech</button>
+  </div>
+
+  <div class="event-list" id="eventList"></div>
+
+  <!-- Event Registration Modal -->
+  <div class="modal" id="registrationModal">
+    <div class="modal-content">
+      <h2>Register for <span id="modalEventName"></span></h2>
+      <input type="text" placeholder="Your Name" id="userName">
+      <input type="text" placeholder="Your Contact Number" id="userPhone">
+      <input type="text" placeholder="Your Branch" id="userBranch">
+      <input type="text" placeholder="Your Roll Number" id="userRollNo">
+      <input type="number" placeholder="Payment Amount ₹" id="userPayment">
+      <input type="file" placeholder="Upload Payment Screenshot" id="userPaymentScreenshot">
+      <input type="text" placeholder="Scanner Code (optional)" id="userScanner">
+      <button onclick="submitRegistration()">Submit</button>
+      <button onclick="closeModal()">Close</button>
+    </div>
+  </div>
+
+  <script>
+    function getTimeRemaining(eventDate) {
+      const now = new Date();
+      const timeRemaining = eventDate - now;
+
+      if (timeRemaining <= 0) {
+        return 'Event Started!';
+      } else {
+        const hours = Math.floor((timeRemaining % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((timeRemaining % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((timeRemaining % (1000 * 60)) / 1000);
+        return `${hours}h ${minutes}m ${seconds}s remaining`;
+      }
+    }
+
+    function updateTimers() {
+      const eventCards = document.querySelectorAll('.event-card');
+      eventCards.forEach((card) => {
+        const eventDate = new Date(card.dataset.eventDate);
+        const timeRemaining = getTimeRemaining(eventDate);
+        const timerElement = card.querySelector('.timer');
+        if (timerElement) timerElement.textContent = timeRemaining;
+      });
+    }
+
+    function loadEvents(filter = 'All') {
+      const events = JSON.parse(localStorage.getItem('events') || '[]');
+      const list = document.getElementById('eventList');
+      list.innerHTML = '';
+
+      events.forEach(event => {
+        if (filter === 'All' || event.club === filter) {
+          const div = document.createElement('div');
+          div.className = 'event-card';
+          div.dataset.eventDate = event.dateTime;
+          div.onclick = () => openModal(event.name);
+
+          const eventDate = new Date(event.dateTime);
+          const timeRemaining = getTimeRemaining(eventDate);
+
+          div.innerHTML = `
+            <img src="${event.imageUrl}" alt="${event.name}" />
+            <h3>${event.name}</h3>
+            <p><strong>Club:</strong> ${event.club}</p>
+            <p><strong>Venue:</strong> ${event.venue}</p>
+            <p><strong>Date:</strong> ${event.dateTime}</p>
+            <p><strong>Contact:</strong> ${event.contact}</p>
+            <p><strong>Payment:</strong> ₹${event.payment}</p>
+            <p><strong>Description:</strong> ${event.description}</p>
+            <div class="timer">${timeRemaining}</div>
+          `;
+          list.appendChild(div);
+        }
+      });
+    }
+
+    function filterEvents(clubName) {
+      loadEvents(clubName);
+    }
+
+    function searchEvents() {
+      const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+      const events = document.querySelectorAll('.event-card');
+      events.forEach(event => {
+        const eventName = event.querySelector('h3').textContent.toLowerCase();
+        event.style.display = eventName.includes(searchTerm) ? 'block' : 'none';
+      });
+    }
+
+    let selectedEventName = '';
+
+    function openModal(eventName) {
+      selectedEventName = eventName;
+      document.getElementById('modalEventName').innerText = eventName;
+      document.getElementById('registrationModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+      document.getElementById('registrationModal').style.display = 'none';
+      document.getElementById('userName').value = '';
+      document.getElementById('userPhone').value = '';
+      document.getElementById('userBranch').value = '';
+      document.getElementById('userRollNo').value = '';
+      document.getElementById('userPayment').value = '';
+      document.getElementById('userScanner').value = '';
+    }
+
+    function submitRegistration() {
+      const name = document.getElementById('userName').value;
+      const phone = document.getElementById('userPhone').value;
+      const branch = document.getElementById('userBranch').value;
+      const rollNo = document.getElementById('userRollNo').value;
+      const payment = document.getElementById('userPayment').value;
+      const screenshot = document.getElementById('userPaymentScreenshot').files[0];
+      const scanner = document.getElementById('userScanner').value;
+
+      if (!name || !phone || !branch || !rollNo || !payment || !screenshot) {
+        alert('Please fill in all fields and upload a payment screenshot!');
+        return;
+      }
+
+      alert('Registration submitted successfully!');
+      closeModal();
+    }
+
+    // Load initial events and start countdown
+    loadEvents();
+    setInterval(updateTimers, 1000);
+  </script>
+</body>
+</html>

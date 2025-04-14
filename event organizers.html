@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Event Organizers View</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+      background-size: 400% 400%;
+      animation: gradientFlow 15s ease infinite;
+      color: white;
+    }
+
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px;
+      background: rgba(0, 0, 0, 0.6);
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 28px;
+      color: #00f9ff;
+    }
+
+    .back-button {
+      background-color: #00a8e8;
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-weight: bold;
+      transition: background 0.3s ease;
+    }
+
+    .back-button:hover {
+      background-color: #007cc2;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    .event-block {
+      background: rgba(255, 255, 255, 0.05);
+      margin: 20px 0;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    .event-block h2 {
+      color: #00f9ff;
+      margin-bottom: 10px;
+    }
+
+    .participant {
+      background: rgba(255, 255, 255, 0.08);
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 6px;
+      border-left: 4px solid #00f9ff;
+    }
+
+    .participant p {
+      margin: 6px 0;
+    }
+
+    img {
+      max-width: 120px;
+      border-radius: 6px;
+      margin-top: 5px;
+      border: 2px solid #00f9ff;
+    }
+
+    .countdown {
+      font-size: 18px;
+      color: #ff0;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>👩‍💼 Event Organizers</h1>
+    <button class="back-button" onclick="window.location.href='dashboard.html'">⬅ Back</button>
+  </header>
+
+  <div class="content">
+    <h2>📝 Registered Participants</h2>
+    <div id="output"></div>
+  </div>
+
+  <script>
+    const registrations = JSON.parse(localStorage.getItem('registrations') || '{}');
+    const outputDiv = document.getElementById('output');
+
+    if (Object.keys(registrations).length === 0) {
+      outputDiv.innerHTML = "<p>No registrations found.</p>";
+    } else {
+      for (const eventName in registrations) {
+        const eventDiv = document.createElement('div');
+        eventDiv.className = 'event-block';
+        eventDiv.innerHTML = `<h2>📌 ${eventName}</h2>`;
+
+        // Add countdown timer
+        const eventDate = registrations[eventName][0]?.eventDate || "2025-05-01T00:00:00"; // Default to a fixed date if not present
+        eventDiv.innerHTML += `<p class="countdown" id="countdown-${eventName}"></p>`;
+
+        // Update countdown for each event
+        setInterval(() => updateCountdown(eventName, eventDate), 1000);
+
+        registrations[eventName].forEach(participant => {
+          const part = document.createElement('div');
+          part.className = 'participant';
+          part.innerHTML = `
+            <p><strong>Name:</strong> ${participant.name}</p>
+            <p><strong>Phone:</strong> ${participant.phone}</p>
+            <p><strong>Branch:</strong> ${participant.branch}</p>
+            <p><strong>Roll No:</strong> ${participant.rollNo}</p>
+            <p><strong>Payment:</strong> ₹${participant.payment}</p>
+            ${participant.screenshot ? `<img src="${participant.screenshot}" alt="Screenshot" />` : '<p><em>No Screenshot Uploaded</em></p>'}
+            <p><strong>Scanner:</strong> ${participant.scanner || 'N/A'}</p>
+          `;
+          eventDiv.appendChild(part);
+        });
+
+        outputDiv.appendChild(eventDiv);
+      }
+    }
+
+    // Countdown function
+    function updateCountdown(eventName, eventDate) {
+      const now = new Date().getTime();
+      const countdownDate = new Date(eventDate).getTime();
+      const distance = countdownDate - now;
+
+      if (distance < 0) {
+        document.getElementById(`countdown-${eventName}`).innerHTML = "Event Started!";
+      } else {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+        document.getElementById(`countdown-${eventName}`).innerHTML = `Time Remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+      }
+    }
+  </script>
+
+</body>
+</html>

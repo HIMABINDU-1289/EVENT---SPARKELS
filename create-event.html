@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Create Event - Event Sparkels</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1cb5e0, #000046);
+      background-size: 400% 400%;
+      animation: gradientBG 15s ease infinite;
+      color: #fff;
+      padding: 20px;
+    }
+
+    @keyframes gradientBG {
+      0% {background-position: 0% 50%;}
+      50% {background-position: 100% 50%;}
+      100% {background-position: 0% 50%;}
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      margin-bottom: 20px;
+    }
+
+    .clubs {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 15px;
+      margin-bottom: 30px;
+    }
+
+    .club-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #00c6ff;
+      border-radius: 12px;
+      padding: 14px 28px;
+      font-size: 18px;
+      color: #fff;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    .club-btn:hover {
+      background: #00c6ff;
+      transform: scale(1.05);
+    }
+
+    #eventForm {
+      max-width: 500px;
+      margin: 0 auto 40px;
+      display: none;
+      background: rgba(0,0,0,0.4);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    }
+
+    #eventForm h3 {
+      margin-bottom: 15px;
+      color: #00eaff;
+    }
+
+    #clubImage {
+      width: 100%;
+      height: auto;
+      margin-bottom: 20px;
+      border-radius: 12px;
+    }
+
+    input, textarea, select {
+      width: 100%;
+      padding: 12px;
+      margin: 10px 0;
+      border-radius: 8px;
+      border: none;
+      font-size: 16px;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      background: linear-gradient(to right, #00c6ff, #0072ff);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      transition: 0.3s ease;
+    }
+
+    button:hover {
+      transform: scale(1.03);
+    }
+
+    #createdEvents {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+
+    .event-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(8px);
+      padding: 20px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+      border-left: 6px solid #00f0ff;
+    }
+
+    .event-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .event-card h3 {
+      margin-top: 0;
+      font-size: 20px;
+      color: #00f7ff;
+    }
+
+    .event-card p {
+      margin: 5px 0;
+    }
+
+    .back-button {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      background: rgba(255,255,255,0.2);
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #fff;
+      text-decoration: none;
+      transition: 0.3s ease;
+    }
+
+    .back-button:hover {
+      background: #00bcd4;
+    }
+
+    .next-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-top: 20px;
+      background: linear-gradient(to right, #00ff80, #28a745);
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 18px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.3s ease;
+    }
+
+    .next-button:hover {
+      transform: scale(1.03);
+    }
+
+    .action-buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+
+    .edit-btn, .delete-btn {
+      padding: 8px 12px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background-color: #ffc107;
+      color: #000;
+    }
+
+    .delete-btn {
+      background-color: #f44336;
+      color: #fff;
+    }
+
+    /* Success Message and Animation */
+    .success-message {
+      display: none;
+      background-color: #4caf50;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 12px;
+      position: absolute;
+      top: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: blast 0.5s ease-out forwards;
+    }
+
+    @keyframes blast {
+      0% { transform: translateX(-50%) scale(1); opacity: 0; }
+      50% { opacity: 1; scale: 1.5; }
+      100% { opacity: 0; transform: translateX(-50%) scale(0); }
+    }
+  </style>
+</head>
+<body>
+  <a href="dashboard.html" class="back-button">⬅ Back</a>
+  <h1>🎨 Create Event</h1>
+
+  <div class="clubs">
+    <button class="club-btn" onclick="selectClub('Sports')">🏏 Sports Club</button>
+    <button class="club-btn" onclick="selectClub('Tech')">💻 Tech Club</button>
+    <button class="club-btn" onclick="selectClub('Cultural')">🎭 Cultural Club</button>
+    <button class="club-btn" onclick="selectClub('Non-Technical')">🎲 Non-Tech Club</button>
+  </div>
+
+  <div id="eventForm">
+    <h3 id="selectedClubName">Creating for ...</h3>
+    <img id="clubImage" src="" alt="Club Image" />
+    <input type="text" id="eventName" placeholder="🎯 Event Name" />
+    <input type="text" id="contact" placeholder="📞 Contact Number" />
+    <input type="number" id="payment" placeholder="💸 Payment Amount (₹)" />
+    <input type="text" id="venue" placeholder="📍 Venue" />
+    <input type="datetime-local" id="eventDateTime" />
+    <textarea id="description" placeholder="📝 Description"></textarea>
+
+    <!-- New Image URL input field -->
+    <input type="url" id="imageURL" placeholder="🔗 Event Image URL" onchange="previewImage()" /> 
+
+    <!-- Image Preview -->
+    <div id="imagePreview" style="margin-top: 15px;">
+      <img id="previewImg" src="" alt="Preview Image" style="max-width: 100%; height: auto; display: none;"/>
+    </div>
+
+    <button onclick="saveEvent()">Create Event</button>
+  </div>
+
+  <h2 style="text-align:center;">📋 Created Events</h2>
+  <div id="createdEvents"></div>
+
+  <div id="successMessage" class="success-message">Event created successfully! 🎉</div>
+
+  <!-- Next Button below Back -->
+  <button class="next-button" onclick="window.location.href='event organizers.html'">Next → Event Organizers</button>
+
+  <script>
+    let selectedClub = "";
+    let editingIndex = -1;
+
+    function selectClub(clubName) {
+      selectedClub = clubName;
+      document.getElementById('selectedClubName').innerText = `Creating for ${clubName} Club`;
+
+      // Set the corresponding club image
+      let imageUrl = "";
+      switch (clubName) {
+        case 'Sports':
+          imageUrl = "images/cricket.jpg";
+          break;
+        case 'Tech':
+          imageUrl = "images/Tech.jpg";
+          break;
+        case 'Cultural':
+          imageUrl = "images/dance.jpg";
+          break;
+        case 'Non-Technical':
+          imageUrl = "images/Non Tech.jpg";
+          break;
+        default:
+          imageUrl = "";
+      }
+      document.getElementById('clubImage').src = imageUrl;
+      document.getElementById('eventForm').style.display = 'block';
+    }
+
+    function previewImage() {
+      const imageURL = document.getElementById('imageURL').value;
+      const previewImg = document.getElementById('previewImg');
+      previewImg.style.display = 'block';
+      previewImg.src = imageURL;
+    }
+
+    function saveEvent() {
+      const eventName = document.getElementById('eventName').value;
+      const contact = document.getElementById('contact').value;
+      const payment = document.getElementById('payment').value;
+      const venue = document.getElementById('venue').value;
+      const dateTime = document.getElementById('eventDateTime').value;
+      const description = document.getElementById('description').value;
+      const imageURL = document.getElementById('imageURL').value;
+
+      if (!eventName.trim()) {
+        alert("Please enter event name");
+        return;
+      }
+
+      let events = JSON.parse(localStorage.getItem('events') || '[]');
+
+      const newEvent = {
+        club: selectedClub,
+        name: eventName,
+        contact: contact,
+        payment: payment,
+        venue: venue,
+        dateTime: dateTime,
+        description: description,
+        imageURL: imageURL
+      };
+
+      if (editingIndex >= 0) {
+        events[editingIndex] = newEvent;
+        editingIndex = -1;
+      } else {
+        events.push(newEvent);
+      }
+
+      localStorage.setItem('events', JSON.stringify(events));
+
+      // Show success message with animation
+      const successMessage = document.getElementById('successMessage');
+      successMessage.style.display = 'block';
+      setTimeout(() => successMessage.style.display = 'none', 2000); // Hide after 2 seconds
+
+      document.getElementById('eventName').value = "";
+      document.getElementById('contact').value = "";
+      document.getElementById('payment').value = "";
+      document.getElementById('venue').value = "";
+      document.getElementById('eventDateTime').value = "";
+      document.getElementById('description').value = "";
+      document.getElementById('imageURL').value = "";
+
+      loadCreatedEvents();
+    }
+
+    function loadCreatedEvents() {
+      const events = JSON.parse(localStorage.getItem('events') || '[]');
+      const container = document.getElementById('createdEvents');
+      container.innerHTML = "";
+
+      events.forEach((event, index) => {
+        const div = document.createElement('div');
+        div.className = "event-card";
+        div.innerHTML = `
+          <h3>${event.name}</h3>
+          <p><strong>Club:</strong> ${event.club}</p>
+          <p><strong>Contact:</strong> ${event.contact}</p>
+          <p><strong>Payment:</strong> ₹${event.payment}</p>
+          <p><strong>Venue:</strong> ${event.venue}</p>
+          <p><strong>Date & Time:</strong> ${event.dateTime}</p>
+          <p><strong>Description:</strong> ${event.description}</p>
+          <p><strong>Image:</strong><br><img src="${event.imageURL}" alt="Event Image" style="max-width: 100%; height: auto;" /></p>
+          <div class="action-buttons">
+            <button class="edit-btn" onclick="editEvent(${index})">Edit</button>
+            <button class="delete-btn" onclick="deleteEvent(${index})">Delete</button>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function editEvent(index) {
+      const events = JSON.parse(localStorage.getItem('events') || '[]');
+      const event = events[index];
+
+      document.getElementById('eventName').value = event.name;
+      document.getElementById('contact').value = event.contact;
+      document.getElementById('payment').value = event.payment;
+      document.getElementById('venue').value = event.venue;
+      document.getElementById('eventDateTime').value = event.dateTime;
+      document.getElementById('description').value = event.description;
+      document.getElementById('imageURL').value = event.imageURL;
+      previewImage();
+
+      selectedClub = event.club;
+      document.getElementById('selectedClubName').innerText = `Editing for ${event.club} Club`;
+
+      editingIndex = index;
+      document.getElementById('eventForm').style.display = 'block';
+    }
+
+    function deleteEvent(index) {
+      let events = JSON.parse(localStorage.getItem('events') || '[]');
+      events.splice(index, 1);
+      localStorage.setItem('events', JSON.stringify(events));
+      loadCreatedEvents();
+    }
+
+    loadCreatedEvents(); // Load events on page load
+  </script>
+</body>
+</html>
